@@ -18,6 +18,8 @@ import org.xml.sax.SAXException;
 
 public class ToolExport {
 
+    private static final String EXCEL_EXTENSION = ".xls";
+
     private static final String DIR_VALUES = "values";
     private static final String[] POTENTIAL_RES_DIRS = new String[]{"res", "src/main/res"};
 
@@ -52,9 +54,23 @@ public class ToolExport {
         }
         File project = new File(config.inputExportProject);
         if (StringUtils.isEmpty(config.outputFile)) {
-            config.outputFile = "exported_strings_" + System.currentTimeMillis() + ".xls";
+            config.outputFile = "exported_strings_" + System.currentTimeMillis() + EXCEL_EXTENSION;
+        }
+        else if (!StringUtils.endsWith(config.outputFile, EXCEL_EXTENSION)) {
+            config.outputFile += EXCEL_EXTENSION;
         }
         tool.outExcelFile = new File(config.outputFile);
+
+        if (!tool.outExcelFile.exists()) {
+            try {
+                tool.outExcelFile.createNewFile();
+            } catch (Exception e) {
+                System.err.println("Cannot create file in position: " + tool.outExcelFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+        }
+        tool.outExcelFile.createNewFile();
+
         tool.project = project.getName();
         tool.mConfig = config;
         tool.sAllowedFiles.addAll(config.additionalResources);
@@ -67,14 +83,23 @@ public class ToolExport {
             System.err.println("Cannot find resource directory.");
             return;
         }
+
+        for (File dir : res.listFiles()) {
+            if (!dir.isDirectory() || !dir.getName().startsWith(DIR_VALUES)) {
+                continue;
+            }
+            if (dir.getName().equals(DIR_VALUES)) {
+                keysIndex = exportDefLang(dir);
+                break;
+            }
+        }
+
         for (File dir : res.listFiles()) {
             if (!dir.isDirectory() || !dir.getName().startsWith(DIR_VALUES)) {
                 continue;
             }
             String dirName = dir.getName();
-            if (dirName.equals(DIR_VALUES)) {
-                keysIndex = exportDefLang(dir);
-            } else {
+            if (!dirName.equals(DIR_VALUES))  {
                 int index = dirName.indexOf('-');
                 if (index == -1)
                     continue;
