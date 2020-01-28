@@ -373,7 +373,6 @@ public class ToolExport {
         return keys;
     }
 
-    /// TODO: For PSLab Test, the missedKeys are wildly miscalculated.
     private void exportLangToExcel(String project, String lang, File src, NodeList strings, File f, Map<String, Integer> keysIndex) throws FileNotFoundException, IOException {
         out.println();
         out.println(String.format("Start processing: '%s'", lang) + " " + src.getName());
@@ -412,13 +411,13 @@ public class ToolExport {
                 cell.setCellStyle(textStyle);
             } else if ("plurals".equals(item.getNodeName())) {
                 String key = item.getAttributes().getNamedItem("name").getNodeValue();
-                String plurarName = key;
+                String pluralName = key;
 
                 NodeList items = item.getChildNodes();
                 for (int j = 0; j < items.getLength(); j++) {
-                    Node plurarItem = items.item(j);
-                    if ("item".equals(plurarItem.getNodeName())) {
-                        key = plurarName + "#" + plurarItem.getAttributes().getNamedItem("quantity").getNodeValue();
+                    Node pluralItem = items.item(j);
+                    if ("item".equals(pluralItem.getNodeName())) {
+                        key = pluralName + "#" + pluralItem.getAttributes().getNamedItem("quantity").getNodeValue();
                         Integer index = keysIndex.get(key);
                         if (index == null) {
                             out.println("\t" + key + " - row does not exist");
@@ -429,7 +428,7 @@ public class ToolExport {
                         HSSFRow row = sheet.getRow(index);
 
                         HSSFCell cell = row.createCell(lastColumnIdx);
-                        cell.setCellValue(plurarItem.getTextContent());
+                        cell.setCellValue(pluralItem.getTextContent());
                         cell.setCellStyle(textStyle);
                     }
                 }
@@ -445,7 +444,7 @@ public class ToolExport {
                             out.println("\t" + key + " - row does not exist");
                             continue;
                         }
-                        missedKeys.remove(key);
+                        missedKeys.remove(itemKey);
 
                         HSSFRow itemRow = sheet.getRow(rowIndex);
 
