@@ -1,10 +1,11 @@
 android-lang-tool
 =================
 
+Clone of [DeltaAskii/android-lang-tool](https://github.com/deltaaskii/android-lang-tool) which is a 
 Clone of [TomasKypta/android-lang-tool](https://github.com/TomasKypta/android-lang-tool)
 
-Solved some issues, like NullPointerException when you have multiple language xml files (like ar) and added the auto-creation of output files if they don't exists.
-
+* [DeltaAskii] Solved some issues, like NullPointerException when you have multiple language xml files (like ar) and added the auto-creation of output files if they don't exists.
+* [tiloc] Solved an issue with missing keys being improperly reported. Made to compile on modern environment. Added some tests.
 
 ## Original Description:
 
