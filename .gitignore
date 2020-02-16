@@ -28,4 +28,5 @@ tmp
 
 # Output Excel files
 *.xls
+*.xlsx
 .~lock.*.xls#
