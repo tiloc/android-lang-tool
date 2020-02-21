@@ -23,7 +23,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -54,7 +53,7 @@ public class ToolImport {
         }
 
         HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(new File(config.inputFile)));
-        HSSFSheet sheet = wb.getSheetAt(0);
+        HSSFSheet sheet = wb.getSheetAt(wb.getActiveSheetIndex());  // Sheet #0 might be an invisible sheet from some corporate plugin.
 
         HSSFSheet sheetMapping = null;
         if (!StringUtils.isEmpty(config.mappingFile)) {
@@ -82,7 +81,7 @@ public class ToolImport {
     public static void run(PrintStream out, String projectDir, String input) throws IOException, ParserConfigurationException, TransformerException {
         ToolImport tool = new ToolImport(out);
         if (input == null || "".equals(input)) {
-            tool.out.println("File name is missed");
+            tool.out.println("File name is missing.");
             return;
         }
 
@@ -108,7 +107,12 @@ public class ToolImport {
     }
 
     private void parse(HSSFSheet sheet) throws IOException, TransformerException {
+        System.out.println("Parsing sheet: " + sheet.getSheetName());
         Row row = sheet.getRow(0);
+        if (row == null) {
+            System.err.println("Row #0 not found!");
+            System.exit(-1);
+        }
         Iterator<Cell> cells = row.cellIterator();
         cells.next();// ignore key
         int i = 1;
@@ -121,6 +125,7 @@ public class ToolImport {
             i++;
         }
     }
+
 
     private void generateLang(HSSFSheet sheet, String lang, int column) throws IOException,
         TransformerException {
